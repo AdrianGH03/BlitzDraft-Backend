@@ -61,9 +61,6 @@ mongoose.connect(uri, {
 });
 
 
-
-
-
 app.use('/auth', authRoutes);
 app.use('/account', passRoutes);
 gameRoutes(app);
