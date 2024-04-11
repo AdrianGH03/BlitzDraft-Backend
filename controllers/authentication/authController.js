@@ -48,9 +48,9 @@ const validateCredentials = (username, password, email) => {
   if (!passwordRegex.test(password)) {
     return { error: 'Password must be between 8 and 20 characters, contain at least one uppercase letter, one number, and one special character.' };
   }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@(?:gmail\.com|outlook\.com|yahoo\.com|hotmail\.com|aol\.com|icloud\.com|protonmail\.com)$/;
   if (!emailRegex.test(email)) {
-    return { error: 'Invalid email.' };
+    return { error: 'Email must come from a valid provider (i.e. gmail, aol, yahoo, etc.)' };
   }
   return null;
 };
