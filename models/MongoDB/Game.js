@@ -8,8 +8,7 @@ const GameSchema = new mongoose.Schema({
   isCompleted: { type: Boolean, default: false },
   guesses: { type: Object, default: {} }, 
   cardsRevealed: { type: Array, default: [] },
-  ipAddress: String,
-  iv: String
+  uuid: String
 });
 
 module.exports = mongoose.model('Game', GameSchema);

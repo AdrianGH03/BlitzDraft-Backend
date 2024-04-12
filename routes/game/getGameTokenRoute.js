@@ -4,40 +4,16 @@ const router = express.Router();
 const difficultySettings = require('../../models/Game/difficultyModel.js').difficultySettings;
 const serverAccessMW = require('../../middleware/serverAccessMW.js');
 const Game = require('../../models/MongoDB/Game.js');
+const { v4: uuidv4 } = require('uuid'); // Import UUID generator
 
 const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 50
+    max: 100 //50
 });
 
 router.use(serverAccessMW, limiter);
-
-
-const algorithm = 'aes-256-cbc';
-const secretKey = process.env.SUPER_SECRET_KEY_ROF_IP;
-const secret = secretKey.slice(0, 32); // Replace with your own secret key
-const iv = crypto.randomBytes(16); // Initialization vector
-
-// Function to encrypt an IP address
-function encrypt(text) {
-  const hash = crypto.createHash('sha256');
-  hash.update(text);
-  const iv = hash.digest().slice(0, 16); // Use the first 16 bytes of the hash as the IV
-  const cipher = crypto.createCipheriv(algorithm, secret, iv);
-  let encrypted = cipher.update(text, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return { iv: iv.toString('hex'), encrypted };
-}
-
-// Function to decrypt an IP address
-function decrypt(iv, encrypted) {
-  const decipher = crypto.createDecipheriv(algorithm, secret, Buffer.from(iv, 'hex'));
-  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
-}
 
 // Function to generate a token
 function generateToken() {
@@ -54,13 +30,18 @@ function returnModifiedGameData(req, res, next) {
   const gameData = req.body;
   const difficulty = sanitizeDifficulty(gameData.body.difficulty);
 
-  const { iv, encrypted: encryptedIp } = encrypt(req.ip);
+  // Get or generate UUID from cookies
+  let uuid = req.cookies.uuid;
+  if (!uuid) {
+    uuid = uuidv4();
+    res.cookie('uuid', uuid);
+  }
 
   if (!gameData || Object.values(gameData).some(value => value == null)) {
     return res.status(400).json({ error: 'Invalid game data' });
   }
 
-  Game.deleteMany({ ipAddress: encryptedIp, iv: iv })
+  Game.deleteMany({ uuid: uuid })
     .then(() => {
       var newGameData = new Game({
         difficulty: difficulty,
@@ -70,8 +51,7 @@ function returnModifiedGameData(req, res, next) {
         isCompleted: false,
         guesses: {},
         cardsRevealed: [],
-        ipAddress: encryptedIp,
-        iv: iv
+        uuid: uuid
       });
 
       newGameData.save()

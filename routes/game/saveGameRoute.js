@@ -7,7 +7,7 @@ const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100
+    max: 300 //100
 });
 
 function saveGameGuessesAndCardsRevealed(req, res, next) {
