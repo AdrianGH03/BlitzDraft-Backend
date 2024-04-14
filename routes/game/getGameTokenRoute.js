@@ -63,11 +63,17 @@ function returnModifiedGameData(req, res, next) {
 
 function getGameDataByToken(req, res, next) {
   const token = req.params.token;
+  const uuid = req.cookies.uuid; 
 
   Game.findOne({ token: token })
     .then(game => {
       if (!game) {
         return res.status(404).json({ error: 'Game not found' });
+      }
+
+      // Check if the UUID matches
+      if (game.uuid !== uuid) {
+        return res.status(403).json({ error: 'Access denied' });
       }
 
       res.json({

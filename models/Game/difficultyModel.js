@@ -21,8 +21,8 @@ var order = [
   "Team1Ban5",
   "Team2Pick4",
   "Team1Pick4",
-  "Team2Pick5",
   "Team1Pick5",
+  "Team2Pick5",
 ]
 
 const difficultySettings = {

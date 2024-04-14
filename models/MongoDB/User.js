@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   profileImage: {
     type: String,
-    default: '6217.png',
+    default: '5908.png',
   },
   totalPointsEarned: Number,
   resetPasswordToken: String,
