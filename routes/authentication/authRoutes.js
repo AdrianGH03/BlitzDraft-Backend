@@ -1,6 +1,6 @@
 const express = require('express');
 const passwordResetController = require('../../controllers/authentication/passwordResetController');
-
+const authController = require('../../controllers/authentication/authController');
 const { body } = require('express-validator');
 const serverAccessMW = require('../../middleware/serverAccessMW');
 
