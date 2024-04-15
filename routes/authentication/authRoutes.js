@@ -1,9 +1,8 @@
 const express = require('express');
 const authController = require('../../controllers/authentication/authController');
-const authMiddleware = require('../../middleware/authMiddleware');
-const userController = require('../../controllers/authentication/userController');
+
 const passwordResetController = require('../../controllers/authentication/passwordResetController');
-const checkAuthController = require('../../controllers/authentication/isAuthenticatedController');
+
 const { body } = require('express-validator');
 const serverAccessMW = require('../../middleware/serverAccessMW');
 
@@ -11,8 +10,9 @@ const router = express.Router();
 const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  //1hr
+  windowMs: 60 * 60 * 1000, 
+  max: 100 
 });
 
 router.use(limiter, serverAccessMW);
@@ -33,10 +33,10 @@ router.post('/login',
   authController.login
 );
 
-router.get('/user/info', authMiddleware, userController.getUser)
+
 
 router.post('/logout', authController.logout);
-router.get('/check-authentication', checkAuthController.checkAuthentication);
+
 
 
 

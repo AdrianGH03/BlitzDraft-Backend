@@ -8,7 +8,7 @@ const saltRounds = 10;
 
 const transporter = createTransporter();
 
-// Create a transporter object for sending emails
+
 function createTransporter() {
   return nodemailer.createTransport({
     service: 'gmail',
@@ -22,7 +22,7 @@ function createTransporter() {
   });
 }
 
-// Validate email and password
+
 function validateEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -33,12 +33,12 @@ function validatePassword(password) {
   return passwordRegex.test(password);
 }
 
-// Find user by email and username
+
 async function findUser(email, username) {
   return await User.findOne({ email, username });
 }
 
-// Send email
+
 async function sendMail(mailOptions) {
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, (err) => {
@@ -51,7 +51,7 @@ async function sendMail(mailOptions) {
   });
 }
 
-// Request password reset
+
 exports.requestPasswordReset = async (req, res) => {
   try {
     const { email, username } = req.body;
@@ -100,7 +100,7 @@ exports.requestPasswordReset = async (req, res) => {
   }
 };
 
-// Reset password
+
 exports.resetPassword = async (req, res) => {
   const { token } = req.body;
   var { newPassword } = req.body;
@@ -116,7 +116,7 @@ exports.resetPassword = async (req, res) => {
     return res.status(400).send({ error: 'Invalid token.' });
   }
 
-  // Check if the token has expired
+  
   if (Date.now() > user.resetPasswordExpires) {
     return res.status(400).send({ error: 'Token has expired.' });
   }

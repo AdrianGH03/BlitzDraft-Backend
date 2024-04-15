@@ -5,7 +5,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
 
-// Validation and error handling
+
 const validateRequest = (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -14,7 +14,7 @@ const validateRequest = (req, res) => {
   return null;
 };
 
-// Check username and password for profanity
+
 const checkProfanity = (username, password, filter) => {
   if (filter.isProfane(username.toLowerCase()) || filter.isProfane(password.toLowerCase())) {
     return { error: `${username} is not allowed` };
@@ -22,7 +22,7 @@ const checkProfanity = (username, password, filter) => {
   return null;
 };
 
-// Check if username or email already exists
+
 const checkExistingUser = async (username, email) => {
   const existingUser = await User.findOne({ username });
   if (existingUser) {
@@ -35,7 +35,7 @@ const checkExistingUser = async (username, email) => {
   return null;
 };
 
-// Validate username, password, and email
+
 const validateCredentials = (username, password, email) => {
   if (username.length < 3 || username.length > 20) {
     return { error: 'Username must be between 3 and 20 characters.' };
@@ -55,14 +55,14 @@ const validateCredentials = (username, password, email) => {
   return null;
 };
 
-// Create tokens for user
+
 const createTokens = (userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
   const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
   return { token, refreshToken };
 };
 
-// Signup, login, and refresh token
+
 exports.signup = async (req, res) => {
   const validationError = validateRequest(req, res);
   if (validationError) return validationError;
@@ -104,7 +104,7 @@ exports.signup = async (req, res) => {
   res.send({ status: 'Success' });
 };
 
-// Login and refresh token
+
 exports.login = async (req, res) => {
   const validationError = validateRequest(req, res);
   if (validationError) return validationError;
@@ -139,7 +139,7 @@ exports.login = async (req, res) => {
   res.send({ status: 'Success' });
 };
 
-// Renew token with refresh token
+
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {

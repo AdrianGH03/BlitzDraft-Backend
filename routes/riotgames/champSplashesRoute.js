@@ -8,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    max: 100 
 });
 
 router.use(limiter, serverAccessMW);
@@ -19,7 +19,7 @@ function champSplashes(req, res){
         res.status(400).send('Bad request');
     }
 
-    // Parse the picksAndBans string back into an object
+   
     const champsObject = querystring.parse(picksAndBans);
 
     getChampSplashes(champsObject)
@@ -34,7 +34,7 @@ function champSplashes(req, res){
     });
 }
 
-router.get('/:tournament', champSplashes); // Changed getTournament to champSplashes
+router.get('/:tournament', champSplashes);
 
 
 module.exports = router;

@@ -17,21 +17,21 @@ router.use(serverAccessMW, limiter);
 
 const algorithm = 'aes-256-cbc';
 const secretKey = process.env.SUPER_SECRET_KEY_ROF_IP;
-const secret = secretKey.slice(0, 32); // Replace with your own secret key
-const iv = crypto.randomBytes(16); // Initialization vector
+const secret = secretKey.slice(0, 32); 
+const iv = crypto.randomBytes(16);
 
-// Function to encrypt an IP address
+
 function encrypt(text) {
   const hash = crypto.createHash('sha256');
   hash.update(text);
-  const iv = hash.digest().slice(0, 16); // Use the first 16 bytes of the hash as the IV
+  const iv = hash.digest().slice(0, 16);
   const cipher = crypto.createCipheriv(algorithm, secret, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
   return { iv: iv.toString('hex'), encrypted };
 }
 
-// Function to decrypt an IP address
+
 function decrypt(iv, encrypted) {
   const decipher = crypto.createDecipheriv(algorithm, secret, Buffer.from(iv, 'hex'));
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
@@ -39,12 +39,12 @@ function decrypt(iv, encrypted) {
   return decrypted;
 }
 
-// Function to generate a token
+
 function generateToken() {
   return crypto.randomBytes(20).toString('hex');
 }
 
-// Function to sanitize difficulty options
+
 function sanitizeDifficulty(difficulty) {
   const allowedDifficulties = Object.keys(difficultySettings);
   return allowedDifficulties.includes(difficulty) ? difficulty : 'easy';

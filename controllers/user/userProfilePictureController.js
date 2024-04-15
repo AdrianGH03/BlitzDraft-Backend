@@ -1,11 +1,7 @@
-//frontend choose image, store it in state
-// create function to send image to backend, use token to authenticate but first check if a user is logged in. parameters should be image, 
-const crypto = require('crypto');
-const User = require('../../models/MongoDB/User');
+
+
 const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const express = require('express');
-const jwt = require('jsonwebtoken');
+
 
 exports.updateProfilePic = async (req, res) => {
     const { image } = req.body;

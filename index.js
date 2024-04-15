@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authentication/authRoutes');
 const userRoutes = require('./routes/enableRoutes/userRoutes');
 const passRoutes = require('./routes/authentication/changePass');
 const gameRoutes = require('./routes/enableRoutes/gameRoutes');
+const checkRoutes = require('./routes/authentication/checkAuth');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
 
 app.set('trust proxy', 1);
@@ -47,7 +48,6 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 
 app.options('*', (req, res) => {
-  // Pre-flight request. Reply successfully:
   res.status(200).send();
 });
 
@@ -62,6 +62,7 @@ mongoose.connect(uri, {
 
 
 app.use('/auth', authRoutes);
+app.use('/check', checkRoutes)
 app.use('/account', passRoutes);
 gameRoutes(app);
 leaguepediaRoutes(app);

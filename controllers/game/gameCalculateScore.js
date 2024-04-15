@@ -1,4 +1,4 @@
-// controllers/gameDataController.js
+
 
 const axios = require('axios');
 const getDifficultySettings = require('../../models/Game/difficultyModel.js').difficultySettings;
@@ -13,7 +13,7 @@ exports.gameCalculateScore = async (req, res) => {
     const game_entries = req.body.gameData;
     const game_guesses = req.body.guesses;
     const game_difficulty = req.body.difficulty;
-    const userInfo = req.body.userInfo; // Get userInfo from request body
+    const userInfo = req.body.userInfo; 
 
     if (!game_entries || !game_guesses || !game_difficulty) {
       return res.status(400).json({ message: 'Missing or empty parameters' });
@@ -29,7 +29,7 @@ exports.gameCalculateScore = async (req, res) => {
       }
     }
 
-    // If userInfo is provided, find the user and update their points
+    
     if (userInfo) {
       const user = await User.findById(userInfo._id);
       if (user) {

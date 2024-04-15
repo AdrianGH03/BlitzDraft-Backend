@@ -114,19 +114,19 @@ function createFilter() {
           "+": "t", // Plus sign
         };
       
-        // Normalize the text
+        
         let normalizedText = text.toLowerCase();
         normalizedText = normalizedText.replace(/\s+/g, ''); // remove spaces
         normalizedText = normalizedText.replace(/[0134576892112]/g, match => numberLetterMapping[match]); // replace numbers with letters
         normalizedText = normalizedText.replace(/(.)\1+/g, '$1'); // replace repeating characters
       
-        // Replace homoglyphs
+        
         for (const [homoglyph, replacement] of Object.entries(homoglyphMapping)) {
           const regex = new RegExp(homoglyph.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
           normalizedText = normalizedText.replace(regex, replacement);
         }
       
-        // Remove non-alphanumeric characters after replacing homoglyphs
+       
         normalizedText = normalizedText.replace(/[^a-z0-9]/gi, '');
       
        

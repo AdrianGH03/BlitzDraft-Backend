@@ -1,4 +1,4 @@
-// controllers/gameDataController.js
+
 
 const axios = require('axios');
 const regions = require('../../models/Tournaments/tournament.js').regions;
@@ -74,14 +74,14 @@ exports.fetchAllGameData = async (req, res) => {
     const team2Players = startingRosters.Team2Players;
 
 
-    // Join the two teams together
+   
     const allPlayers = team1Players.concat(team2Players);
 
-    // Call the getPlayerImages function with allPlayers
+    
     const playerImagesTeam1 = await getPlayerImages(team1Players);
     const playerImagesTeam2 = await getPlayerImages(team2Players);
 
-    // Combine playerImagesTeam1 and playerImagesTeam2 into one object
+    
     const playerImages = { 
       [rosterTeam1]: playerImagesTeam1, 
       [rosterTeam2]: playerImagesTeam2 
