@@ -8,8 +8,8 @@ const router = express.Router();
 const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5
+    windowMs: 60 * 60 * 1000, //1hr
+    max: 15
 });
 
 router.use(limiter, serverAccessMW);

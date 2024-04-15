@@ -2,6 +2,7 @@ const checkAuthController = require('../../controllers/authentication/isAuthenti
 const serverAccessMW = require('../../middleware/serverAccessMW');
 const authMiddleware = require('../../middleware/authMiddleware');
 const userController = require('../../controllers/authentication/userController');
+const authController = require('../../controllers/authentication/authController');
 const express = require('express');
 
 const router = express.Router();
@@ -16,6 +17,7 @@ const limiter = rateLimit({
 router.use(limiter, serverAccessMW);
 router.get('/check-authentication', checkAuthController.checkAuthentication);
 router.get('/user/info', authMiddleware, userController.getUser)
+router.post('/logout', authController.logout);
 
 
 module.exports = router;

@@ -1,6 +1,4 @@
 const express = require('express');
-const authController = require('../../controllers/authentication/authController');
-
 const passwordResetController = require('../../controllers/authentication/passwordResetController');
 
 const { body } = require('express-validator');
@@ -10,9 +8,9 @@ const router = express.Router();
 const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
-  //1hr
-  windowMs: 60 * 60 * 1000, 
-  max: 100 
+  //5hr
+  windowMs: 5 * 60 * 60 * 1000, 
+  max: 10
 });
 
 router.use(limiter, serverAccessMW);
@@ -34,8 +32,6 @@ router.post('/login',
 );
 
 
-
-router.post('/logout', authController.logout);
 
 
 
