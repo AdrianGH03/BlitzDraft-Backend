@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 
 const corsOptions = {
-  origin: ['https://blitz-draft.vercel.app', 'http://localhost:5173'],
+  origin: ['https://blitz-draft.vercel.app'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: [
