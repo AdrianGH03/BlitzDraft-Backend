@@ -2,9 +2,7 @@ const axios = require('axios');
 
 async function gameStartingRosters(gameId){
     
-    if (!/^[a-zA-Z0-9\s/]+_\w+\s+\d+_\d+_\d+$/.test(gameId)) {
-        throw new Error('Invalid gameId');
-    }
+    
 
     try {
         const response = await axios.get('https://lol.gamepedia.com/api.php', {
