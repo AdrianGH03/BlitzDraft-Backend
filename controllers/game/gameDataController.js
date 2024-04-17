@@ -81,7 +81,17 @@ exports.fetchAllGameData = async (req, res) => {
     const playerImagesTeam1 = await getPlayerImages(team1Players);
     const playerImagesTeam2 = await getPlayerImages(team2Players);
 
+    Object.values(playerImagesTeam1).forEach(value => {
+      if(value === null) {
+        throw new Error('Invalid player image in team 1');
+      }
+    });
     
+    Object.values(playerImagesTeam2).forEach(value => {
+      if(value === null) {
+        throw new Error('Invalid player image in team 2');
+      }
+    });
     const playerImages = { 
       [rosterTeam1]: playerImagesTeam1, 
       [rosterTeam2]: playerImagesTeam2 

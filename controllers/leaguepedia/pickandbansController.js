@@ -29,14 +29,21 @@ async function pickandbans(tournament){
         });
         
         const playedGames = response1.data.cargoquery
-            .filter(game => game.title.MatchId)
-            .map(game => {
-                const team1 = game.title.Team1
-                const team2 = game.title.Team2
-                const match = game.title
-                
-                return {match: `${team1} vs ${team2}`, data: match}
-            });
+        .filter(game => game.title.MatchId)
+        .map(game => {
+            const team1 = game.title.Team1
+            const team2 = game.title.Team2
+            const match = game.title
+
+            // Check if any of the picks or bans are null
+            for(let i = 1; i <= 5; i++) {
+                if(match[`Team1Pick${i}`] === null || match[`Team2Pick${i}`] === null || match[`Team1Ban${i}`] === null || match[`Team2Ban${i}`] === null) {
+                    throw new Error('Invalid pick or ban');
+                }
+            }
+
+            return {match: `${team1} vs ${team2}`, data: match}
+        });
 
         const validGames = playedGames.filter(game => game.data.Winner != null);
 
