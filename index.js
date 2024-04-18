@@ -5,7 +5,7 @@ const port = 3000;
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
+const cron = require('node-cron');
 
 const leaguepediaRoutes = require('./routes/enableRoutes/leaguepediaRoutes');
 const riotAPIRoutes = require('./routes/enableRoutes/riotAPIRoutes');
@@ -14,8 +14,9 @@ const userRoutes = require('./routes/enableRoutes/userRoutes');
 const passRoutes = require('./routes/authentication/changePass');
 const gameRoutes = require('./routes/enableRoutes/gameRoutes');
 const checkRoutes = require('./routes/authentication/checkAuth');
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
+const { updateStats } = require('./controllers/leaguepedia/StatsController');
 
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
 app.set('trust proxy', 1);
 
 app.use(express.json());
@@ -60,7 +61,7 @@ mongoose.connect(uri, {
   console.error('Error connecting to MongoDB', err);
 });
 
-
+cron.schedule('0 0 * * SUN', updateStats);
 app.use('/auth', authRoutes);
 app.use('/check', checkRoutes)
 app.use('/account', passRoutes);
