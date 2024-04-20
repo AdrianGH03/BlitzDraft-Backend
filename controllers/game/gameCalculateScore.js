@@ -32,7 +32,7 @@ exports.gameCalculateScore = async (req, res) => {
                    (key === 'Team1Pick4' && game_entries[key] === game_guesses['Team1Pick5']) ||
                    (key === 'Team1Pick5' && game_entries[key] === game_guesses['Team1Pick4']) ||
                    (key === 'Team2Pick1' && game_entries[key] === game_guesses['Team2Pick2']) ||
-                   (key === 'Team2Pick2' && game_entries[key] === game_guesses['Team1Pick1'])) {
+                   (key === 'Team2Pick2' && game_entries[key] === game_guesses['Team2Pick1'])) {
           totalScore += difficultySettings.pointsPer;
         }
       }
