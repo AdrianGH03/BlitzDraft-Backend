@@ -24,8 +24,17 @@ exports.gameCalculateScore = async (req, res) => {
     let totalScore = 0;
 
     for (let key in game_entries) {
-      if (key in game_guesses && game_entries[key] === game_guesses[key]) {
-        totalScore += difficultySettings.pointsPer;
+      if (key in game_guesses) {
+        if (game_entries[key] === game_guesses[key]) {
+          totalScore += difficultySettings.pointsPer;
+        } else if ((key === 'Team1Pick2' && game_entries[key] === game_guesses['Team1Pick3']) ||
+                   (key === 'Team1Pick3' && game_entries[key] === game_guesses['Team1Pick2']) ||
+                   (key === 'Team1Pick4' && game_entries[key] === game_guesses['Team1Pick5']) ||
+                   (key === 'Team1Pick5' && game_entries[key] === game_guesses['Team1Pick4']) ||
+                   (key === 'Team2Pick1' && game_entries[key] === game_guesses['Team2Pick2']) ||
+                   (key === 'Team2Pick2' && game_entries[key] === game_guesses['Team1Pick1'])) {
+          totalScore += difficultySettings.pointsPer;
+        }
       }
     }
 

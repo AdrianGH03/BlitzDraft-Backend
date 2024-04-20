@@ -17,6 +17,7 @@ const checkRoutes = require('./routes/authentication/checkAuth');
 const { updateStats } = require('./controllers/leaguepedia/StatsController');
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
+
 app.set('trust proxy', 1);
 
 app.use(express.json());
