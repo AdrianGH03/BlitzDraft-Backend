@@ -16,8 +16,8 @@ const gameRoutes = require('./routes/enableRoutes/gameRoutes');
 const checkRoutes = require('./routes/authentication/checkAuth');
 const { updateStats } = require('./controllers/leaguepedia/StatsController');
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
-
+const uri = `mongodb+srv://${process.env.DB_USER2}:${process.env.DB_PASSWORD2}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
+const uri2 = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@blitzdraft.wsv38m3.mongodb.net/?retryWrites=true&w=majority&appName=BlitzDraft`;
 app.set('trust proxy', 1);
 
 app.use(express.json());
@@ -27,7 +27,7 @@ app.use(cookieParser());
 
 
 const corsOptions = {
-  origin: ['https://blitz-draft.vercel.app'],
+  origin: ['https://blitz-draft.vercel.app', 'http://localhost:5173'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: [
