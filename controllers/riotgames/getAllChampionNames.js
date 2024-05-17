@@ -22,7 +22,7 @@ async function getAllChampSprites(){
             }
             
         }
-
+       
         return newChampModel;
         
     } catch (error) {

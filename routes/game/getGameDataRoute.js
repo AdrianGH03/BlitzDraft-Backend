@@ -10,6 +10,6 @@ const limiter = rateLimit({
 });
 router.use(limiter, serverAccessMW);
 
-router.get('/all-game-data', gameDataController);
+router.post('/all-game-data', gameDataController);
 
 module.exports = router;

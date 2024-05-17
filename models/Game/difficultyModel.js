@@ -82,4 +82,4 @@ const difficultySettings = {
     }
 };
 
-module.exports = { difficultySettings };
+module.exports = { difficultySettings, order };

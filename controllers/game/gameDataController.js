@@ -2,13 +2,13 @@
 
 const axios = require('axios');
 const regions = require('../../models/Tournaments/tournament.js').regions;
-const tournaments = require('../../models/Tournaments/tournament.js').tournaments;
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
 const getChampSplashes = require('../riotgames/champSplashesController.js').getChampSplashes;
 const getTeamImages = require('../leaguepedia/teamImagesController.js').getTeamImages;
 const getStartingRosters = require('../leaguepedia/gameSRostersController.js').gameStartingRosters;
 const getPlayerImages = require('../leaguepedia/playerImagesController.js').getPlayerImages;
 const getDifficultySettings = require('../../models/Game/difficultyModel.js').difficultySettings;
+const order = require('../../models/Game/difficultyModel.js').order;
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -19,14 +19,49 @@ function shuffle(array) {
 
 exports.fetchAllGameData = async (req, res) => {
   try {
-    const difficulty = req.query.difficulty || 'easy';
-    const difficultySetting = getDifficultySettings[difficulty];
+    const difficulty = req.body.difficulty;
+    const startPick = req.body.startPick;
 
-    const randomRegion = regions[Math.floor(Math.random() * regions.length)];
-    const randomTournament = tournaments[randomRegion][Math.floor(Math.random() * tournaments[randomRegion].length)];
 
-    if (!Object.values(allTournaments).some(tournamentsArray => tournamentsArray.includes(randomTournament))) {
-      throw new Error('Invalid tournament');
+    
+    let difficultySetting;
+    if (difficulty === 'custom') {
+      const startPickIndex = order.indexOf(startPick);
+      if (startPickIndex === -1) {
+        return res.status(400).json({ error: 'Invalid startPick' });
+      }
+
+      difficultySetting = {
+        total: (order.length - startPickIndex) * 10,
+        pointsPer: 10, 
+        pickBanCards: order.slice(0, startPickIndex).length,
+        order: order,
+        cardsRevealed: order.slice(0, startPickIndex),
+      };
+    } else {
+      difficultySetting = getDifficultySettings[difficulty];
+    }
+
+    const tournament = req.body.tournament;
+    const patch = req.body.patch;
+
+    if (!Object.values(allTournaments).some(tournamentsArray => tournamentsArray.some(tournamentName => tournamentName === tournament))) {
+        return res.status(400).json({ error: 'Invalid tournament' });
+    }
+    let whereClause = `PB.OverviewPage='${tournament}'`;
+    if (patch) {
+        whereClause += ` AND MS.Patch='${patch}'`;
+    }
+    let region;
+    for (const [key, value] of Object.entries(allTournaments)) {
+      if (value.includes(tournament)) {
+        region = key;
+        break;
+      }
+    }
+
+    if (!region) {
+      return res.status(400).json({ error: 'Invalid tournament' });
     }
 
     const response1 = await axios.get('https://lol.gamepedia.com/api.php', {
@@ -35,12 +70,16 @@ exports.fetchAllGameData = async (req, res) => {
         format: 'json',
         tables: 'PicksAndBansS7=PB, MatchSchedule=MS',
         fields: 'Team1PicksByRoleOrder, Team2PicksByRoleOrder, MS.Patch, MS.DateTime_UTC, MS.OverviewPage, PB.OverviewPage, PB.MatchId, PB.GameId, PB.Team1Ban1, PB.Team1Ban2, PB.Team1Ban3, PB.Team1Ban4, PB.Team1Ban5, PB.Team1Pick1, PB.Team1Pick2, PB.Team1Pick3, PB.Team1Pick4, PB.Team1Pick5, PB.Team2Ban1, PB.Team2Ban2, PB.Team2Ban3, PB.Team2Ban4, PB.Team2Ban5, PB.Team2Pick1, PB.Team2Pick2, PB.Team2Pick3, PB.Team2Pick4, PB.Team2Pick5, PB.Team1, PB.Team2, PB.Winner',
-        where: `PB.OverviewPage='${randomTournament}'`,
+        where: whereClause,
         limit: 500,
         join_on: "MS.OverviewPage=PB.OverviewPage, MS.MatchId=PB.MatchId",
         order_by: "MS.DateTime_UTC ASC"
       }
     });
+    
+    if(!response1.data.cargoquery || response1.data.cargoquery.length == 0){
+      return res.status(400).json({ error: 'No games found for selected parameters.' });
+    }
 
     const playedGames = response1.data.cargoquery
       .filter(game => game.title.MatchId)
@@ -57,6 +96,10 @@ exports.fetchAllGameData = async (req, res) => {
     shuffle(validGames);
 
     const random10Games = validGames.slice(0, 10);
+    if (!random10Games.some(game => !Object.values(game.data).includes('None'))) {
+      return res.status(400).json({ error: 'No valid games found.' });
+    }
+    
     let randomGame;
     do {
       randomGame = random10Games[Math.floor(Math.random() * random10Games.length)];
@@ -66,7 +109,7 @@ exports.fetchAllGameData = async (req, res) => {
     const team2 = randomGame.data.Team2;
     const gameId = randomGame.data.GameId;
 
-    const teamImages = await getTeamImages(randomTournament, [team1, team2]);
+    const teamImages = await getTeamImages(tournament, [team1, team2]);
     const startingRosters = await getStartingRosters(gameId);
     const rosterTeam1 = startingRosters.Team1;
     const rosterTeam2 = startingRosters.Team2;
@@ -125,8 +168,8 @@ exports.fetchAllGameData = async (req, res) => {
 
     
     const allData = {
-      tournament: randomTournament,
-      region: randomRegion,
+      tournament: tournament,
+      region: region,
       game: randomGame,
       champSplashes: champSplashes,
       difficultySettings: difficultySetting,
