@@ -5,7 +5,7 @@ controllers/authentication/authController.js
 controllers/authentication/isAuthenticatedController.js
 controllers/authentication/passwordResetController.js
 controllers/authentication/userController.js
-controllers/webScrapeStatsController.js
+controllers/leaguepedia/webScrapeStatsController.js
 
 controllers/user
 controllers/user/userProfilePictureController.js
