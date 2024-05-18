@@ -44,9 +44,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 
-app.options('*', (req, res) => {
-  res.status(200).send();
-});
+app.options('*', cors(corsOptions));
 
 app.use(express.static('public'));
 
