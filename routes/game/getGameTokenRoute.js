@@ -66,7 +66,7 @@ function returnModifiedGameData(req, res, next) {
     return res.status(400).json({ error: 'Invalid game data' });
   }
 
-  Game.deleteMany({ ipAddress: encryptedIp, iv: iv })
+  Game.findOneAndDelete({ ipAddress: encryptedIp, iv: iv })
     .then(() => {
       var newGameData = new Game({
         difficulty: difficulty,
