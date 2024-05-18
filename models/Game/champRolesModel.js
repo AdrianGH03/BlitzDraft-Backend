@@ -1,4 +1,4 @@
-const champsByRole = {
+let champsByRole = {
     "top": [
         "Aatrox",
         "Akali",
@@ -55,7 +55,9 @@ const champsByRole = {
         "Yone",
         "Yorick",
         "Zac",
-        "Akshan"
+        "Akshan",
+        "RekSai",
+        "Skarner",
     ],
     "jungle": [
         "Amumu",
@@ -244,9 +246,20 @@ const champsByRole = {
         "Zac",
         "Zilean",
         "Zoe",
-        "Zyra"
-    ]
+        "Zyra",
+        "Ornn",
+    ], 
+    "all": []
 }
+
+let allChampsSet = new Set();
+for (let role in champsByRole) {
+    if (role !== "all") {
+        champsByRole[role].forEach(champ => allChampsSet.add(champ));
+    }
+}
+champsByRole.all = Array.from(allChampsSet).sort();
+
 
 module.exports = champsByRole;
 

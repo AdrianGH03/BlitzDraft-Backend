@@ -8,12 +8,17 @@ const Counter = require('../../models/MongoDB/Counter.js');
 
 const rateLimit = require("express-rate-limit");
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100
+const limiter1 = rateLimit({
+  windowMs: 30 * 60 * 1000, 
+  max: 20
 });
 
-router.use(serverAccessMW, limiter);
+const limiter2 = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 minutes
+  max: 100
+});
+
+router.use(serverAccessMW);
 
 
 const algorithm = 'aes-256-cbc';
@@ -88,11 +93,16 @@ function returnModifiedGameData(req, res, next) {
 
 function getGameDataByToken(req, res, next) {
   const token = req.params.token;
+  const { iv, encrypted: encryptedIp } = encrypt(req.ip);
 
   Game.findOne({ token: token })
     .then(game => {
       if (!game) {
         return res.status(404).json({ error: 'Game not found' });
+      }
+
+      if (game.ipAddress !== encryptedIp || game.iv !== iv) {
+        return res.status(403).json({ error: 'Access denied' });
       }
 
       res.json({
@@ -107,7 +117,7 @@ function getGameDataByToken(req, res, next) {
     .catch(err => res.status(500).json({ error: err.message }));
 }
 
-router.post('/modified-game-data', returnModifiedGameData);
-router.get('/get-game/:token', getGameDataByToken);
+router.post('/modified-game-data', limiter1, returnModifiedGameData);
+router.get('/get-game/:token', limiter2, getGameDataByToken);
 
 module.exports = router;

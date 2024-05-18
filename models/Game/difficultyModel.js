@@ -79,7 +79,8 @@ const difficultySettings = {
         "Team2Ban2",
         "Team1Ban3",
       ]
-    }
+    },
+    custom: {}
 };
 
 module.exports = { difficultySettings, order };

@@ -22,6 +22,7 @@ async function getAllChampSprites(){
             }
             
         }
+        
        
         return newChampModel;
         

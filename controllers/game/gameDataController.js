@@ -32,7 +32,7 @@ exports.validateFetchAllGameData = [
     .withMessage('Invalid startPick'),
   body('tournament')
     .trim()
-    .matches(/^[a-z0-9/ ]+$/i)
+    .matches(/^[a-z0-9/ \-]+$/i)
     .withMessage('Invalid tournament'),
   body('patch')
     .optional({ checkFalsy: true })
@@ -65,6 +65,7 @@ exports.fetchAllGameData = async (req, res) => {
         order: order,
         cardsRevealed: order.slice(0, startPickIndex),
       };
+      console.log(difficulty)
     } else {
       difficultySetting = getDifficultySettings[difficulty];
     }

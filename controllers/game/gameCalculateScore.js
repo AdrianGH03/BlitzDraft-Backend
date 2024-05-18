@@ -19,7 +19,15 @@ exports.gameCalculateScore = async (req, res) => {
       return res.status(400).json({ message: 'Missing or empty parameters' });
     }
 
-    const difficultySettings = getDifficultySettings[game_difficulty];
+    let difficultySettings;
+    if (game_difficulty === 'custom') {
+      difficultySettings = req.body.difficultySettings;
+      if (!difficultySettings) {
+        return res.status(400).json({ message: 'Missing difficulty settings for custom difficulty' });
+      }
+    } else {
+      difficultySettings = getDifficultySettings[game_difficulty];
+    }
 
     let totalScore = 0;
 
