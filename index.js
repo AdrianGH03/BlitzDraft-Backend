@@ -17,7 +17,6 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(helmet());
-
 app.use(cookieParser());
 
 
@@ -44,8 +43,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 
-app.options('*', cors(corsOptions));
-
+app.options('*', (req, res) => {
+  res.status(200).send();
+});
 app.use(express.static('public'));
 
 mongoose.connect(uri2, {
@@ -62,6 +62,10 @@ riotAPIRoutes(app);
 statsRoutes(app);
 
 
+app.get('/', (req, res) => {
+  res.send('Working');
+});
+
 app.listen(port, () => {
-    console.log(`Server is running`);
+  console.log(`Server is running`);
 });
