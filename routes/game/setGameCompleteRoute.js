@@ -6,7 +6,7 @@ const Game = require('../../models/MongoDB/Game.js');
 const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 30 * 60 * 1000, // 30 minutes
     max: 100
 });
 

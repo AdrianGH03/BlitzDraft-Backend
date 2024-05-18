@@ -6,11 +6,12 @@ controllers/authentication/isAuthenticatedController.js
 controllers/authentication/passwordResetController.js
 controllers/authentication/userController.js
 controllers/leaguepedia/webScrapeStatsController.js
-
+controllers/leaguepedia/StatsController.js
 controllers/user
 controllers/user/userProfilePictureController.js
 middleware/authMiddleware.js
 models/MongoDB/User.js
+models/Game/StatsModel.js
 public/profile-pictures
 
 routes/authentication

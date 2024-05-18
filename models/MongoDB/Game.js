@@ -4,7 +4,7 @@ const GameSchema = new mongoose.Schema({
   difficulty: String,
   token: String,
   gameData: Object,
-  createdAt: { type: Date, default: Date.now, expires: '5h' },
+  createdAt: { type: Date, default: Date.now, expires: '30m' },
   isCompleted: { type: Boolean, default: false },
   guesses: { type: Object, default: {} }, 
   cardsRevealed: { type: Array, default: [] },

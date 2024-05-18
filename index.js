@@ -6,15 +6,10 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
-
+require('dotenv').config();
 const leaguepediaRoutes = require('./routes/enableRoutes/leaguepediaRoutes');
 const riotAPIRoutes = require('./routes/enableRoutes/riotAPIRoutes');
-const authRoutes = require('./routes/authentication/authRoutes');
-const userRoutes = require('./routes/enableRoutes/userRoutes');
-const passRoutes = require('./routes/authentication/changePass');
 const gameRoutes = require('./routes/enableRoutes/gameRoutes');
-const checkRoutes = require('./routes/authentication/checkAuth');
-const { updateStats } = require('./controllers/leaguepedia/StatsController');
 const statsRoutes = require('./routes/enableRoutes/statsRoutes');
 
 const uri = `mongodb+srv://${process.env.DB_USER2}:${process.env.DB_PASSWORD2}@loldraftsim.hm2uwm5.mongodb.net/?retryWrites=true&w=majority&appName=LolDraftSim`;
@@ -23,7 +18,7 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(helmet());
-require('dotenv').config();
+
 app.use(cookieParser());
 
 
@@ -68,12 +63,6 @@ gameRoutes(app);
 leaguepediaRoutes(app);
 riotAPIRoutes(app);
 statsRoutes(app);
-
-app.get('/', (req, res) => {
-    res.send('Yoo this bih is working!');
-});
-
-
 
 
 app.listen(port, () => {

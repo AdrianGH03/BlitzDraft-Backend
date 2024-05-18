@@ -4,6 +4,7 @@ const router = express.Router();
 const difficultySettings = require('../../models/Game/difficultyModel.js').difficultySettings;
 const serverAccessMW = require('../../middleware/serverAccessMW.js');
 const Game = require('../../models/MongoDB/Game.js');
+const Counter = require('../../models/MongoDB/Counter.js');
 
 const rateLimit = require("express-rate-limit");
 
@@ -75,9 +76,13 @@ function returnModifiedGameData(req, res, next) {
       });
 
       newGameData.save()
-        .then(() => res.json(newGameData))
+        .then(() => {
+          Counter.findByIdAndUpdate({ _id: 'gameCounter' }, { $inc: { count: 1 } }, { new: true, upsert: true })
+            .then(() => res.json(newGameData))
+            .catch(err => res.status(500).json({ error: err.message }));
+        })
         .catch(err => res.status(500).json({ error: err.message }));
-    })
+    }) 
     .catch(err => res.status(500).json({ error: err.message }));
 }
 

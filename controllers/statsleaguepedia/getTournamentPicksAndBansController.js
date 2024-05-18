@@ -1,12 +1,34 @@
 const axios = require('axios');
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
-
+const allPatches = require('../../models/Tournaments/tournament.js').patches;
+const validator = require('validator');
 const cache = {};
 
+function generatePatchRange(patch) {
+    if (patch.includes('-')) {
+        const [start, end] = patch.split('-').map(Number);
+        return Array.from({ length: end - start + 1 }, (_, i) => (start + i).toFixed(1));
+    }
+    return [patch];
+}
+function customEscape(input) {
+    let escaped = validator.escape(input);
+    return escaped.replace(/&#x2F;/g, '/');
+}
+
 async function getChampPickBans(req, res){
-    const tournament = req.body.tournament;
-    const patch = req.body.patch;
-    const side = req.body.side;
+    let tournament = req.body.tournament;
+    let patch = req.body.patch;
+    let side = req.body.side;
+    if (typeof tournament !== 'string' || (patch && typeof patch !== 'string') || (side && typeof side !== 'string')) {
+        return res.status(400).json({ error: 'Invalid input' });
+    }
+
+    tournament = customEscape(tournament);
+    patch = patch ? validator.escape(patch) : patch;
+    side = side ? validator.escape(side) : side;
+
+    
 
     const cacheKey = `${tournament}-${patch}-${side}`;
 
@@ -16,6 +38,10 @@ async function getChampPickBans(req, res){
 
     if (!Object.values(allTournaments).some(tournamentsArray => tournamentsArray.some(tournamentName => tournamentName === tournament))) {
         return res.status(400).json({ error: 'Invalid tournament' });
+    }
+
+    if (allPatches[tournament] && !allPatches[tournament].some(tournamentPatch => generatePatchRange(tournamentPatch.patchesPlayed).includes(patch))) {
+        return res.status(400).json({ error: 'Invalid patch for the selected tournament' });
     }
     let championStats = {}; 
     let whereClause = `SG.Overviewpage='${tournament}'`;
@@ -112,7 +138,7 @@ async function getChampPickBans(req, res){
             return res.status(400).json({ error: 'No games found for selected parameters.' });
         }
         cache[cacheKey] = championStats;
-        console.log("called")
+        
         return res.json(championStats);
     } catch (error) {
         console.error('Error:', error);

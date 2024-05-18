@@ -9,6 +9,7 @@ const getStartingRosters = require('../leaguepedia/gameSRostersController.js').g
 const getPlayerImages = require('../leaguepedia/playerImagesController.js').getPlayerImages;
 const getDifficultySettings = require('../../models/Game/difficultyModel.js').difficultySettings;
 const order = require('../../models/Game/difficultyModel.js').order;
+const { body, validationResult } = require('express-validator');
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -17,13 +18,39 @@ function shuffle(array) {
   }
 }
 
+
+
+exports.validateFetchAllGameData = [
+  body('difficulty')
+    .trim()
+    .isIn(['easy', 'medium', 'hard', 'custom'])
+    .withMessage('Invalid difficulty'),
+  body('startPick')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isIn(order)
+    .withMessage('Invalid startPick'),
+  body('tournament')
+    .trim()
+    .matches(/^[a-z0-9/ ]+$/i)
+    .withMessage('Invalid tournament'),
+  body('patch')
+    .optional({ checkFalsy: true })
+    .trim()
+    .matches(/^[a-z0-9.]+$/i)
+    .withMessage('Invalid patch'),
+];
+
 exports.fetchAllGameData = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const difficulty = req.body.difficulty;
     const startPick = req.body.startPick;
 
 
-    
     let difficultySetting;
     if (difficulty === 'custom') {
       const startPickIndex = order.indexOf(startPick);
