@@ -21,7 +21,6 @@ function getStartingRoster(req, res){
 
     gameStartingRosters(gameId)
     .then(data => {
-        console.log('data:', data);
         res.send(data);
     })
     .catch(error => {

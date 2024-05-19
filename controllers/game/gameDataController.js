@@ -65,7 +65,7 @@ exports.fetchAllGameData = async (req, res) => {
         order: order,
         cardsRevealed: order.slice(0, startPickIndex),
       };
-      console.log(difficulty)
+      
     } else {
       difficultySetting = getDifficultySettings[difficulty];
     }

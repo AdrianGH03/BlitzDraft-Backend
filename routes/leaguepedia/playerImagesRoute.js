@@ -16,7 +16,6 @@ function getAllPlayerImages(req, res){
 
     getPlayerImages(allPlayers)
     .then(data => {
-        console.log('data:', data);
         res.send(data);
     })
     .catch(error => {

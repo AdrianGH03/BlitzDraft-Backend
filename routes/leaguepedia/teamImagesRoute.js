@@ -25,7 +25,6 @@ function getTournament(req, res){
 
     getTeamImages(tournament, teams)
     .then(data => {
-        console.log('data:', data);
         res.send(data);
     })
     .catch(error => {

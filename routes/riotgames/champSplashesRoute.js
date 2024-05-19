@@ -25,7 +25,6 @@ function champSplashes(req, res){
     getChampSplashes(champsObject)
 
     .then(data => {
-        console.log('data:', data);
         res.send(data);
     })
     .catch(error => {

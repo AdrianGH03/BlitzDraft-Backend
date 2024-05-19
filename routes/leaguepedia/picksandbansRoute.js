@@ -20,7 +20,6 @@ function getTournament(req, res){
 
     pickandbans(tournament)
     .then(data => {
-        console.log('data:', data);
         res.send(data);
     })
     .catch(error => {
