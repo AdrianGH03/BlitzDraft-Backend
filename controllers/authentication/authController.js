@@ -1,6 +1,5 @@
 const User = require('../../models/MongoDB/User');
 const jwt = require('jsonwebtoken');
-const createFilter = require('../../other/filters');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
@@ -63,7 +62,7 @@ exports.signup = async (req, res) => {
   if (validationError) return validationError;
   
 
-  const filter = await createFilter();
+  
   const { username, password, email } = req.body;
 
   const sanitizedUsername = validator.escape(username);
