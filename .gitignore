@@ -1,2 +1,5 @@
 .env
 node_modules
+other
+other/badWords.txt
+other/filters.js

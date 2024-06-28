@@ -15,12 +15,7 @@ const validateRequest = (req, res) => {
 };
 
 
-const checkProfanity = (username, password, filter) => {
-  if (filter.isProfane(username.toLowerCase()) || filter.isProfane(password.toLowerCase())) {
-    return { error: `${username} is not allowed` };
-  }
-  return null;
-};
+
 
 
 const checkExistingUser = async (username, email) => {
@@ -77,8 +72,6 @@ exports.signup = async (req, res) => {
 
   if(sanitizedUsername == '' || sanitizedPassword == '' || sanitizedEmail == '') return res.status(400).send({ error: 'Please fill in all fields' });
 
-  const profanityError = checkProfanity(sanitizedUsername, sanitizedPassword, filter);
-  if (profanityError) return res.status(400).send(profanityError);
 
   const existingUserError = await checkExistingUser(sanitizedUsername, sanitizedEmail);
   if (existingUserError) return res.status(400).send(existingUserError);
