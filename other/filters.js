@@ -1,11 +1,13 @@
 const fs = require('fs');
+const path = require('path');
 const Filter = require('bad-words');
 
 function createFilter() {
   return new Promise((resolve, reject) => {
     const filter = new Filter();
+    const filePath = path.join(__dirname, 'other', 'badWords.txt');
 
-    fs.readFile('./other/badWords.txt', 'utf8', (err, data) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         reject(err);
