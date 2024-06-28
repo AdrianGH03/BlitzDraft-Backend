@@ -9,8 +9,11 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const leaguepediaRoutes = require('./routes/enableRoutes/leaguepediaRoutes');
 const riotAPIRoutes = require('./routes/enableRoutes/riotAPIRoutes');
+const authRoutes = require('./routes/authentication/authRoutes');
+const userRoutes = require('./routes/enableRoutes/userRoutes');
+const passRoutes = require('./routes/authentication/changePass');
 const gameRoutes = require('./routes/enableRoutes/gameRoutes');
-const statsRoutes = require('./routes/enableRoutes/statsRoutes');
+const checkRoutes = require('./routes/authentication/checkAuth');
 
 const uri2 = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@blitzdraft.wsv38m3.mongodb.net/?retryWrites=true&w=majority&appName=BlitzDraft`;
 app.set('trust proxy', 1);
@@ -55,11 +58,13 @@ mongoose.connect(uri2, {
   console.error('Error connecting to MongoDB', err);
 });
 
-
+app.use('/auth', authRoutes);
+app.use('/check', checkRoutes)
+app.use('/account', passRoutes);
 gameRoutes(app);
 leaguepediaRoutes(app);
 riotAPIRoutes(app);
-statsRoutes(app);
+userRoutes(app);
 
 
 app.get('/', (req, res) => {
