@@ -14,6 +14,7 @@ const userRoutes = require('./routes/enableRoutes/userRoutes');
 const passRoutes = require('./routes/authentication/changePass');
 const gameRoutes = require('./routes/enableRoutes/gameRoutes');
 const checkRoutes = require('./routes/authentication/checkAuth');
+const statsRoutes = require('./routes/enableRoutes/statsRoutes');
 
 const uri2 = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@blitzdraft.wsv38m3.mongodb.net/?retryWrites=true&w=majority&appName=BlitzDraft`;
 app.set('trust proxy', 1);
@@ -59,12 +60,13 @@ mongoose.connect(uri2, {
 });
 
 app.use('/auth', authRoutes);
-app.use('/check', checkRoutes)
+app.use('/auth', checkRoutes)
 app.use('/account', passRoutes);
 gameRoutes(app);
 leaguepediaRoutes(app);
 riotAPIRoutes(app);
 userRoutes(app);
+statsRoutes(app);
 
 
 app.get('/', (req, res) => {
