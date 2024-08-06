@@ -50,7 +50,13 @@ app.use(express.urlencoded({ extended: true }));
 app.options('*', (req, res) => {
   res.status(200).send();
 });
-app.use(express.static('public'));
+app.use(express.static('public', {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.jsx')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 mongoose.connect(uri2, {
 }).then(() => {
