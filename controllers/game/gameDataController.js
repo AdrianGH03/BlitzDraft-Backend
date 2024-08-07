@@ -1,5 +1,3 @@
-
-
 const axios = require('axios');
 const regions = require('../../models/Tournaments/tournament.js').regions;
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
@@ -17,8 +15,6 @@ function shuffle(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
-
-
 
 exports.validateFetchAllGameData = [
   body('difficulty')
@@ -47,9 +43,10 @@ exports.fetchAllGameData = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const difficulty = req.body.difficulty;
-    const startPick = req.body.startPick;
+    
 
+    const difficulty = req.body.difficulty;
+    let startPick = req.body.startPick;
 
     let difficultySetting;
     if (difficulty === 'custom') {
@@ -68,7 +65,11 @@ exports.fetchAllGameData = async (req, res) => {
       
     } else {
       difficultySetting = getDifficultySettings[difficulty];
+      if (!startPick) {
+        startPick = order[difficultySetting.cardsRevealed.length];
+      }
     }
+
 
     const tournament = req.body.tournament;
     const patch = req.body.patch;
@@ -144,11 +145,8 @@ exports.fetchAllGameData = async (req, res) => {
     const team1Players = startingRosters.Team1Players;
     const team2Players = startingRosters.Team2Players;
 
-
-   
     const allPlayers = team1Players.concat(team2Players);
 
-    
     const playerImagesTeam1 = await getPlayerImages(team1Players);
     const playerImagesTeam2 = await getPlayerImages(team2Players);
 
@@ -191,10 +189,8 @@ exports.fetchAllGameData = async (req, res) => {
         Team2Ban5: randomGame.data.Team2Ban5
       };
 
-      const champSplashes = await getChampSplashes(champsObject);
+    const champSplashes = await getChampSplashes(champsObject);
 
-
-    
     const allData = {
       tournament: tournament,
       region: region,
@@ -204,10 +200,10 @@ exports.fetchAllGameData = async (req, res) => {
       difficulty: difficulty,
       teamImages,
       startingRosters,
-      playerImages
+      playerImages,
+      startPick,
     };
 
-    
     res.json(allData);
   } catch (error) {
     console.error('Error:', error);

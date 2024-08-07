@@ -50,9 +50,9 @@ const difficultySettings = {
       ]
     },
     medium: {
-      total: 100,
+      total: 110,
       pointsPer: medpoints,
-      pickBanCards: 10,
+      pickBanCards: 11,
       order: order,
       cardsRevealed: [
         "Team1Ban1",
@@ -64,7 +64,6 @@ const difficultySettings = {
         "Team1Pick1",
         "Team2Pick1",
         "Team2Pick2",
-        "Team1Pick2",
       ]
     },
     hard: {

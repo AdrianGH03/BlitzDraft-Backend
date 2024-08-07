@@ -6,7 +6,7 @@ const serverAccessMW = require('../../middleware/serverAccessMW.js');
 const router = express.Router();
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 35
+    max: 100
 });
 
 router.use(limiter, serverAccessMW);
