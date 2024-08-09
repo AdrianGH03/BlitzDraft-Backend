@@ -2,6 +2,7 @@ let champsByRole = {
     "top": [
         "Aatrox",
         "Akali",
+        "Aurora",
         "Camille",
         "Chogath",
         "Darius",
@@ -117,6 +118,7 @@ let champsByRole = {
         "Anivia",
         "Annie",
         "AurelionSol",
+        "Aurora",
         "Azir",
         "Brand",
         "Cassiopeia",
