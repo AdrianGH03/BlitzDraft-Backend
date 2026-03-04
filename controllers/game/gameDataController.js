@@ -1,4 +1,4 @@
-const axios = require('axios');
+const leaguepediaClient = require('../../clients/leaguepediaClient');
 const regions = require('../../models/Tournaments/tournament.js').regions;
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
 const getChampSplashes = require('../riotgames/champSplashesController.js').getChampSplashes;
@@ -92,19 +92,25 @@ exports.fetchAllGameData = async (req, res) => {
     if (!region) {
       return res.status(400).json({ error: 'Invalid tournament' });
     }
-
-    const response1 = await axios.get('https://lol.gamepedia.com/api.php', {
-      params: {
-        action: 'cargoquery',
-        format: 'json',
-        tables: 'PicksAndBansS7=PB, MatchSchedule=MS',
-        fields: 'Team1PicksByRoleOrder, Team2PicksByRoleOrder, MS.Patch, MS.DateTime_UTC, MS.OverviewPage, PB.OverviewPage, PB.MatchId, PB.GameId, PB.Team1Ban1, PB.Team1Ban2, PB.Team1Ban3, PB.Team1Ban4, PB.Team1Ban5, PB.Team1Pick1, PB.Team1Pick2, PB.Team1Pick3, PB.Team1Pick4, PB.Team1Pick5, PB.Team2Ban1, PB.Team2Ban2, PB.Team2Ban3, PB.Team2Ban4, PB.Team2Ban5, PB.Team2Pick1, PB.Team2Pick2, PB.Team2Pick3, PB.Team2Pick4, PB.Team2Pick5, PB.Team1, PB.Team2, PB.Winner',
-        where: whereClause,
-        limit: 500,
-        join_on: "MS.OverviewPage=PB.OverviewPage, MS.MatchId=PB.MatchId",
-        order_by: "MS.DateTime_UTC ASC"
-      }
+    //console.log(whereClause)
+    const response1 = await leaguepediaClient.get({
+      action: 'cargoquery',
+      format: 'json',
+      tables: 'PicksAndBansS7=PB, MatchSchedule=MS',
+      fields: 'Team1PicksByRoleOrder, Team2PicksByRoleOrder, MS.Patch, MS.DateTime_UTC, MS.OverviewPage, PB.OverviewPage, PB.MatchId, PB.GameId, PB.Team1Ban1, PB.Team1Ban2, PB.Team1Ban3, PB.Team1Ban4, PB.Team1Ban5, PB.Team1Pick1, PB.Team1Pick2, PB.Team1Pick3, PB.Team1Pick4, PB.Team1Pick5, PB.Team2Ban1, PB.Team2Ban2, PB.Team2Ban3, PB.Team2Ban4, PB.Team2Ban5, PB.Team2Pick1, PB.Team2Pick2, PB.Team2Pick3, PB.Team2Pick4, PB.Team2Pick5, PB.Team1, PB.Team2, PB.Winner',
+      where: whereClause,
+      limit: 30,
+      join_on: "MS.OverviewPage=PB.OverviewPage, MS.MatchId=PB.MatchId",
+      order_by: "MS.DateTime_UTC ASC"
     });
+
+    if(response1.data.error){
+      const err = new Error('Rate limit exceeded');
+      err.status = 429;
+      throw err;
+    }
+
+    
     
     if(!response1.data.cargoquery || response1.data.cargoquery.length == 0){
       return res.status(400).json({ error: 'No games found for selected parameters.' });
@@ -140,31 +146,31 @@ exports.fetchAllGameData = async (req, res) => {
 
     const teamImages = await getTeamImages(tournament, [team1, team2]);
     const startingRosters = await getStartingRosters(gameId);
-    const rosterTeam1 = startingRosters.Team1;
-    const rosterTeam2 = startingRosters.Team2;
-    const team1Players = startingRosters.Team1Players;
-    const team2Players = startingRosters.Team2Players;
+    // const rosterTeam1 = startingRosters.Team1;
+    // const rosterTeam2 = startingRosters.Team2;
+    // const team1Players = startingRosters.Team1Players;
+    // const team2Players = startingRosters.Team2Players;
 
-    const allPlayers = team1Players.concat(team2Players);
+    // const allPlayers = team1Players.concat(team2Players);
 
-    const playerImagesTeam1 = await getPlayerImages(team1Players);
-    const playerImagesTeam2 = await getPlayerImages(team2Players);
+    // const playerImagesTeam1 = await getPlayerImages(team1Players);
+    // const playerImagesTeam2 = await getPlayerImages(team2Players);
 
-    Object.values(playerImagesTeam1).forEach(value => {
-      if(value === null) {
-        throw new Error('Invalid player image in team 1');
-      }
-    });
+    // Object.values(playerImagesTeam1).forEach(value => {
+    //   if(value === null) {
+    //     throw new Error('Invalid player image in team 1');
+    //   }
+    // });
     
-    Object.values(playerImagesTeam2).forEach(value => {
-      if(value === null) {
-        throw new Error('Invalid player image in team 2');
-      }
-    });
-    const playerImages = { 
-      [rosterTeam1]: playerImagesTeam1, 
-      [rosterTeam2]: playerImagesTeam2 
-    };
+    // Object.values(playerImagesTeam2).forEach(value => {
+    //   if(value === null) {
+    //     throw new Error('Invalid player image in team 2');
+    //   }
+    // });
+    // const playerImages = { 
+    //   [rosterTeam1]: playerImagesTeam1, 
+    //   [rosterTeam2]: playerImagesTeam2 
+    // };
 
     const champsObject = {
         Team1Pick1: randomGame.data.Team1Pick1,
@@ -200,13 +206,15 @@ exports.fetchAllGameData = async (req, res) => {
       difficulty: difficulty,
       teamImages,
       startingRosters,
-      playerImages,
       startPick,
     };
 
     res.json(allData);
   } catch (error) {
     console.error('Error:', error);
+    if (error.status === 429 || (error.response && error.response.status === 429)) {
+      return res.status(429).json({ message: 'Rate limit exceeded. Please try again in a moment.' });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 };

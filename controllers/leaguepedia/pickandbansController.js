@@ -1,4 +1,4 @@
-const axios = require('axios');
+const leaguepediaClient = require('../../clients/leaguepediaClient');
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
 
 
@@ -15,17 +15,15 @@ async function pickandbans(tournament){
         throw new Error('Invalid tournament');
     }
     try {
-        const response1 = await axios.get('https://lol.gamepedia.com/api.php', {
-            params: {
-                action: 'cargoquery',
-                format: 'json',
-                tables: 'PicksAndBansS7=PB, MatchSchedule=MS',
-                fields: 'Team1PicksByRoleOrder, Team2PicksByRoleOrder, MS.Patch, MS.DateTime_UTC, MS.OverviewPage, PB.OverviewPage, PB.MatchId, PB.GameId, PB.Team1Ban1, PB.Team1Ban2, PB.Team1Ban3, PB.Team1Ban4, PB.Team1Ban5, PB.Team1Pick1, PB.Team1Pick2, PB.Team1Pick3, PB.Team1Pick4, PB.Team1Pick5, PB.Team2Ban1, PB.Team2Ban2, PB.Team2Ban3, PB.Team2Ban4, PB.Team2Ban5, PB.Team2Pick1, PB.Team2Pick2, PB.Team2Pick3, PB.Team2Pick4, PB.Team2Pick5, PB.Team1, PB.Team2, PB.Winner',
-                where: `PB.OverviewPage='${tournament}'`,
-                limit: 500,
-                join_on: "MS.OverviewPage=PB.OverviewPage, MS.MatchId=PB.MatchId",
-                order_by: "MS.DateTime_UTC ASC"
-            }
+        const response1 = await leaguepediaClient.get({
+            action: 'cargoquery',
+            format: 'json',
+            tables: 'PicksAndBansS7=PB, MatchSchedule=MS',
+            fields: 'Team1PicksByRoleOrder, Team2PicksByRoleOrder, MS.Patch, MS.DateTime_UTC, MS.OverviewPage, PB.OverviewPage, PB.MatchId, PB.GameId, PB.Team1Ban1, PB.Team1Ban2, PB.Team1Ban3, PB.Team1Ban4, PB.Team1Ban5, PB.Team1Pick1, PB.Team1Pick2, PB.Team1Pick3, PB.Team1Pick4, PB.Team1Pick5, PB.Team2Ban1, PB.Team2Ban2, PB.Team2Ban3, PB.Team2Ban4, PB.Team2Ban5, PB.Team2Pick1, PB.Team2Pick2, PB.Team2Pick3, PB.Team2Pick4, PB.Team2Pick5, PB.Team1, PB.Team2, PB.Winner',
+            where: `PB.OverviewPage='${tournament}'`,
+            limit: 500,
+            join_on: "MS.OverviewPage=PB.OverviewPage, MS.MatchId=PB.MatchId",
+            order_by: "MS.DateTime_UTC ASC"
         });
         
         const playedGames = response1.data.cargoquery
@@ -54,6 +52,9 @@ async function pickandbans(tournament){
         
         return randomGame;
     } catch (error) {
+        if (error.status === 429 || (error.response && error.response.status === 429)) {
+            return res.status(429).json({ message: 'Rate limit exceeded. Please try again in a moment.' });
+        }
         console.error('Error:', error);
     }
 }

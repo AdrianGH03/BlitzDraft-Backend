@@ -1,4 +1,4 @@
-const axios = require('axios');
+const leaguepediaClient = require('../../clients/leaguepediaClient');
 const allTournaments = require('../../models/Tournaments/tournament.js').tournaments;
 const allPatches = require('../../models/Tournaments/tournament.js').patches;
 const validator = require('validator');
@@ -49,16 +49,14 @@ async function getChampPickBans(req, res){
         whereClause += ` AND SG.Patch='${patch}'`;
     }
     try {
-        const response1 = await axios.get('https://lol.gamepedia.com/api.php', {
-            params: {
-                action: 'cargoquery',
-                format: 'json',
-                tables: 'ScoreboardGames=SG, Tournaments=T',
-                fields: 'SG.DateTime_UTC, SG.Patch, SG.Winner, SG.OverviewPage, T.Name, T.OverviewPage, SG.Team1, SG.Team2, SG.Team1Picks, SG.Team2Picks, SG.Team1Bans, SG.Team2Bans',
-                where: whereClause,
-                limit: 500,
-                join_on: "SG.OverviewPage=T.OverviewPage",
-            }
+        const response1 = await leaguepediaClient.get({
+            action: 'cargoquery',
+            format: 'json',
+            tables: 'ScoreboardGames=SG, Tournaments=T',
+            fields: 'SG.DateTime_UTC, SG.Patch, SG.Winner, SG.OverviewPage, T.Name, T.OverviewPage, SG.Team1, SG.Team2, SG.Team1Picks, SG.Team2Picks, SG.Team1Bans, SG.Team2Bans',
+            where: whereClause,
+            limit: 500,
+            join_on: "SG.OverviewPage=T.OverviewPage",
         });
         if(!response1.data.cargoquery || Object.keys(response1.data).length == 0){
             return res.status(400).json({ error: 'No games found for selected parameters.' });
@@ -142,6 +140,9 @@ async function getChampPickBans(req, res){
         return res.json(championStats);
     } catch (error) {
         console.error('Error:', error);
+        if (error.status === 429 || (error.response && error.response.status === 429)) {
+            return res.status(429).json({ message: 'Rate limit exceeded. Please try again in a moment.' });
+        }
         return res.status(500).json({ error: 'An error occurred' });
     }
 }

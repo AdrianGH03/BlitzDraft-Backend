@@ -1,4 +1,4 @@
-const axios = require('axios');
+const leaguepediaClient = require('../../clients/leaguepediaClient');
 
 
 function sanitizeUrlParam(value) {
@@ -8,17 +8,15 @@ function sanitizeUrlParam(value) {
 async function getTeamImages(tournament, teams){
     tournament = sanitizeUrlParam(tournament);
     try {
-        const response = await axios.get('https://lol.gamepedia.com/api.php', {
-            params: {
-                action: 'cargoquery',
-                format: 'json',
-                tables: 'TournamentRosters=TR, Teams=T',
-                fields: 'TR.Team, T.Image, T.OverviewPage',
-                where: `TR.OverviewPage='${tournament}'`,
-                join_on: 'TR.Team=T.OverviewPage'
-            }
+        const response = await leaguepediaClient.get({
+            action: 'cargoquery',
+            format: 'json',
+            tables: 'TournamentRosters=TR, Teams=T',
+            fields: 'TR.Team, T.Image, T.OverviewPage',
+            where: `TR.OverviewPage='${tournament}'`,
+            join_on: 'TR.Team=T.OverviewPage'
         });
-
+        
         if (!response.data || !response.data.cargoquery) {
             throw new Error('Unexpected API response');
         }
@@ -29,17 +27,12 @@ async function getTeamImages(tournament, teams){
             
             if (teams.includes(team.title.Team)) {
                 try {
-                    const response = await axios.get('https://lol.gamepedia.com/api.php', {
-                        params: {
-                            action: 'query',
-                            format: 'json',
-                            prop: 'imageinfo',
-                            iiprop: 'url',
-                            titles: 'File:' + team.title.Image
-                        },
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                    const response = await leaguepediaClient.get({
+                        action: 'query',
+                        format: 'json',
+                        prop: 'imageinfo',
+                        iiprop: 'url',
+                        titles: 'File:' + team.title.Image
                     });
                     if (!response.data || !response.data.query || !response.data.query.pages) {
                         throw new Error('Unexpected API response');
@@ -53,6 +46,9 @@ async function getTeamImages(tournament, teams){
                         }
                     }
                 } catch (error) {
+                    if (error.status === 429 || (error.response && error.response.status === 429)) {
+                        return res.status(429).json({ message: 'Rate limit exceeded. Please try again in a moment.' });
+                    }
                     console.error('Error fetching image URL:', error.message);
                 }
             }
@@ -63,6 +59,9 @@ async function getTeamImages(tournament, teams){
 
         return teamImages;
     } catch (error) {
+        if (error.status === 429 || (error.response && error.response.status === 429)) {
+            return res.status(429).json({ message: 'Rate limit exceeded. Please try again in a moment.' });
+        }
         console.error('Error:', error.message);
     }
 }
